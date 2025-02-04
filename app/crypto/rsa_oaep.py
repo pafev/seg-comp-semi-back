@@ -35,7 +35,7 @@ def oaep_pad(message_bytes: bytes, label: bytes = b"", n_bits: int = 1024) -> by
     m_len = len(message_bytes)
 
     if m_len > n_bytes - 2 * hash_len - 1:
-        raise ValueError("Mensagem muito longa para o padding OAEP")
+        raise ValueError("Too long message for OAEP")
 
     l_hash = sha3_256(label).digest()
     ps = b"\x00" * (n_bytes - (m_len + 1) - 2 * hash_len - 1)
@@ -63,7 +63,7 @@ def oaep_unpad(
     hash_len = sha3_256().digest_size
 
     if len(padded_message_bytes) != n_bytes:
-        raise ValueError("Tamanho inválido para OAEP unpadding")
+        raise ValueError("OAEP unpadding: invalid message size")
 
     y, masked_seed, masked_db = (
         padded_message_bytes[0],
@@ -71,7 +71,7 @@ def oaep_unpad(
         padded_message_bytes[1 + hash_len :],
     )
     if y != 0:
-        raise ValueError("OAEP decoding falhou")
+        raise ValueError("OAEP unpadding: invalid message")
 
     seed_mask = mgf1(masked_db, hash_len)
     seed = bytes(a ^ b for a, b in zip(masked_seed, seed_mask))
@@ -80,11 +80,11 @@ def oaep_unpad(
 
     l_hash = sha3_256(label).digest()
     if db[:hash_len] != l_hash:
-        raise ValueError("OAEP decoding falhou: label hash incorreto")
+        raise ValueError("OAEP unpadding: incorrect label")
 
     index = db.find(b"\x01", hash_len)
     if index == -1:
-        raise ValueError("OAEP decoding falhou: delimitador \x01 não encontrado")
+        raise ValueError("OAEP unpadding: delimiter \x01 doesnt found")
 
     return db[index + 1 :]
 
