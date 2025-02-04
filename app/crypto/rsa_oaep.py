@@ -90,12 +90,28 @@ def oaep_unpad(
 
 
 def encrypt_rsa(message_bytes: bytes, key: Tuple[int, int], n_bits=1024) -> bytes:
+    """
+    Encrypt a message using RSA.
+
+    :param message_bytes: Message to encrypt.
+    :param key: RSA public key.
+    :param n_bits: Number of bits in the RSA modulus.
+    :return: Encrypted message.
+    """
     message_int = int.from_bytes(message_bytes, byteorder="big")
     dlog = pow(message_int, key[0], key[1])
     return dlog.to_bytes((n_bits * 2) // 8, byteorder="big")
 
 
 def decrypt_rsa(message_bytes: bytes, key: Tuple[int, int], n_bits=1024) -> bytes:
+    """
+    Decrypt a message using RSA.
+
+    :param message_bytes: Encrypted message.
+    :param key: RSA private key.
+    :param n_bits: Number of bits in the RSA modulus.
+    :return: Decrypted message.
+    """
     message_int = int.from_bytes(message_bytes, byteorder="big")
     dlog = pow(message_int, key[0], key[1])
     return dlog.to_bytes((n_bits) // 8, byteorder="big")
