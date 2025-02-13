@@ -9,7 +9,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
-    password = Column(String, unique=True)
+    password = Column(String)
     files_received = relationship(
         "File", back_populates="receiver", foreign_keys="File.receiver_id"
     )
